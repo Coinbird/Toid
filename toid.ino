@@ -11,26 +11,30 @@ uint8_t displayMode = 0;
 
 void setup()
 {
-
+  setupRTC();
+//  setupStepper();
 }
 
 void loop()
 {
 
   tmElements_t tm;
-  // Clear the screen
-  lcd.clear();
-
   if (displayMode == 0 && buttonA.isPressed()) {
     displayMode = 1; 
   }
-  switch(displayMode) {
-    case 0:
-      displayRTCTime(tm);
-      break;
-    default:
-      lcd.print("TOID v1");    
-  }
 
+  if (true) { //isRTCTriggered()) {
+    // Clear the screen
+    lcd.clear();
+  
+    switch(displayMode) {
+      case 0:
+        displayRTCTime(tm);
+        break;
+      default:
+        lcd.print("TOID v1");    
+    }
+  }
+//  runStepper();
   delay(200);
 }
