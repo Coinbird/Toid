@@ -21,8 +21,10 @@ void loop()
   tmElements_t tm;
   if (displayMode == 0 && buttonA.getSingleDebouncedPress()) {
     displayMode = 1; 
+    randomizeTarget();
   } else if (displayMode ==1 && buttonA.getSingleDebouncedPress()) {
     displayMode = 0;
+    randomizeTarget();
   }
 
   if (isRTCTriggered()) {

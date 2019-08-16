@@ -5,10 +5,16 @@ AccelStepper stepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
 
 void setupStepper() {
    stepper.setMaxSpeed(150);
-   stepper.setSpeed(150);  
+   stepper.setAcceleration(10);
+//   stepper.setSpeed(150);  
+    randomizeTarget();
 
 }
 
 void runStepper() {
-     stepper.runSpeed();
+  stepper.run();
+}
+
+void randomizeTarget() {
+  stepper.moveTo(1000 - (rand() % 2000));
 }
