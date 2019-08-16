@@ -9,7 +9,7 @@ const float GEAR_RED = 64;
 const float STEPS_PER_OUT_REV = STEPS_PER_REV * GEAR_RED;
 
 #define MAX_STEPPER_SPEED 150
-#define STEPPER_ACCELERATION 10
+#define STEPPER_ACCELERATION 100
 
 AccelStepper stepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11); 
 // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
@@ -42,5 +42,5 @@ long getPos() {
 }
 
 void randomizeTarget() {
-  stepper.moveTo(rand() % (long)STEPS_PER_OUT_REV);
+  stepper.moveTo(getPos() + (long)STEPS_PER_OUT_REV/4);
 }

@@ -6,7 +6,7 @@
 
 const uint8_t chipSelect = 4;
 
-char currentTide[255] = "ASS";
+char currentTide[255] = "---";
 File filePtr;
 
 const char CSV_DELIM = ',';

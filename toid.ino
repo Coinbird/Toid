@@ -1,7 +1,4 @@
 #include <AStar32U4.h>
-#include <Wire.h>
-#include <TimeLib.h>
-#include <DS1307RTC.h>
 
 #include <SD.h>
 
@@ -22,7 +19,6 @@ void setup()
 void loop()
 {
   if (buttonB.getSingleDebouncedPress()) {
-//    moveSmallAmountCW();
     randomizeTarget();
   }
   if (buttonC.getSingleDebouncedPress()) {

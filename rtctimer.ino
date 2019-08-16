@@ -1,5 +1,7 @@
 #include <Wire.h>
- 
+#include <DS1307RTC.h>
+#include <TimeLib.h>
+
 #define DS1307_CTRL_ID 0x68
 
 #define SQ_INTERRUPT_PIN 0
@@ -44,10 +46,10 @@ int readRTC() {
 }
 void displayRTCTime() {
   if (readRTC()) {
-     printDate(tm);
+     printDate();
      // Go to the next line
      lcd.gotoXY(0, 1);
-     printTime(tm);
+     printTime();
   }  
 }
 
@@ -55,7 +57,7 @@ void getCurDate(char* date) {
   snprintf(date, 12, "%d%c%d%c%d", tm.Month, '/', tm.Day, '/', tmYearToCalendar(tm.Year));
 }
 
-void printDate(const tmElements_t& tm) {
+void printDate() {
      lcd.print(tm.Month);
      lcd.print('/');
      printTwoChar(tm.Day);
@@ -63,7 +65,7 @@ void printDate(const tmElements_t& tm) {
      lcd.print(tmYearToCalendar(tm.Year) % 100);  
 }
 
-void printTime(const tmElements_t& tm) {
+void printTime() {
      lcd.print(tm.Hour);
      lcd.print(':');
      printTwoChar(tm.Minute);
