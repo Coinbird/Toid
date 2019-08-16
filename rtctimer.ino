@@ -2,6 +2,8 @@
  
 #define DS1307_CTRL_ID 0x68
 
+#define SQ_INTERRUPT_PIN 0
+
 int tick = 0;
 int old_tick = 0;
 
@@ -16,18 +18,28 @@ void handleInt() {
   tick++;
 }
 
+int getTickCount() {
+  return tick;
+}
+
 bool isRTCTriggered() {
-  return tick != old_tick;
+  if (tick != old_tick) {
+    old_tick = tick;   
+    return true;
+  } else {
+    return false;
+  }
 }
 
 void setupRTC() {
-//  attachInterrupt(0,handleInt,FALLING);
+  attachInterrupt(digitalPinToInterrupt(SQ_INTERRUPT_PIN),handleInt,FALLING);
   // 1Hz
-  //setSQW(0x10);
+  setSQW(0x10);
 }
 
 void displayRTCTime(tmElements_t& tm) {
   if (RTC.read(tm)) {
+     lcd.gotoXY(0, 0);
      printDate(tm);
      // Go to the next line
      lcd.gotoXY(0, 1);

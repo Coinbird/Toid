@@ -5,7 +5,7 @@ AccelStepper stepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
 
 void setupStepper() {
    stepper.setMaxSpeed(1000);
-   stepper.setSpeed(250);  
+   stepper.setSpeed(50);  
 
 }
 

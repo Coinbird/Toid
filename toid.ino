@@ -19,22 +19,26 @@ void loop()
 {
 
   tmElements_t tm;
-  if (displayMode == 0 && buttonA.isPressed()) {
+  if (displayMode == 0 && buttonA.getSingleDebouncedPress()) {
+    lcd.clear();
     displayMode = 1; 
+  } else if (displayMode ==1 && buttonA.getSingleDebouncedPress()) {
+    lcd.clear();
+    displayMode = 0;
   }
 
-  if (true) { //isRTCTriggered()) {
+  if (isRTCTriggered()) {
     // Clear the screen
     lcd.clear();
-  
+    
     switch(displayMode) {
       case 0:
         displayRTCTime(tm);
         break;
       default:
-        lcd.print("TOID v1");    
+        lcd.print(getTickCount());    
     }
   }
 //  runStepper();
-  delay(200);
+//  delay(200);
 }
