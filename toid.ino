@@ -5,26 +5,32 @@
 
 AStar32U4LCD lcd;
 
-AStar32U4ButtonA buttonA;
+AStar32U4ButtonB buttonB;
+AStar32U4ButtonC buttonC;
 
 uint8_t displayMode = 0;
 
 void setup()
 {
+  openSDFile();
   setupRTC();
   setupStepper();
 }
 
 void loop()
 {
-
   tmElements_t tm;
-  if (displayMode == 0 && buttonA.getSingleDebouncedPress()) {
-    displayMode = 1; 
+  if (buttonB.getSingleDebouncedPress()) {
+//    moveSmallAmountCW();
     randomizeTarget();
-  } else if (displayMode ==1 && buttonA.getSingleDebouncedPress()) {
-    displayMode = 0;
-    randomizeTarget();
+  }
+  if (buttonC.getSingleDebouncedPress()) {
+    stopAll();
+    if (displayMode == 0) {
+      displayMode = 1;
+    } else {
+      displayMode = 0;
+    }
   }
 
   if (isRTCTriggered()) {
@@ -36,9 +42,8 @@ void loop()
         displayRTCTime(tm);
         break;
       default:
-        lcd.print(getTickCount());    
+        lcd.print(getCurrentTide());    
     }
   }
   runStepper();
-//  delay(200);
 }
