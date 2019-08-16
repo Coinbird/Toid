@@ -12,7 +12,7 @@ uint8_t displayMode = 0;
 void setup()
 {
   setupRTC();
-//  setupStepper();
+  setupStepper();
 }
 
 void loop()
@@ -20,10 +20,8 @@ void loop()
 
   tmElements_t tm;
   if (displayMode == 0 && buttonA.getSingleDebouncedPress()) {
-    lcd.clear();
     displayMode = 1; 
   } else if (displayMode ==1 && buttonA.getSingleDebouncedPress()) {
-    lcd.clear();
     displayMode = 0;
   }
 
@@ -39,6 +37,6 @@ void loop()
         lcd.print(getTickCount());    
     }
   }
-//  runStepper();
+  runStepper();
 //  delay(200);
 }

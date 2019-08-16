@@ -39,7 +39,6 @@ void setupRTC() {
 
 void displayRTCTime(tmElements_t& tm) {
   if (RTC.read(tm)) {
-     lcd.gotoXY(0, 0);
      printDate(tm);
      // Go to the next line
      lcd.gotoXY(0, 1);
