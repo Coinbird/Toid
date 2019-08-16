@@ -3,6 +3,8 @@
 #include <TimeLib.h>
 #include <DS1307RTC.h>
 
+#include <SD.h>
+
 AStar32U4LCD lcd;
 
 AStar32U4ButtonB buttonB;
@@ -19,7 +21,6 @@ void setup()
 
 void loop()
 {
-  tmElements_t tm;
   if (buttonB.getSingleDebouncedPress()) {
 //    moveSmallAmountCW();
     randomizeTarget();
@@ -39,7 +40,7 @@ void loop()
     
     switch(displayMode) {
       case 0:
-        displayRTCTime(tm);
+        displayRTCTime();
         break;
       default:
         lcd.print(getCurrentTide());    

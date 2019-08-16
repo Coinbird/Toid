@@ -7,6 +7,8 @@
 int tick = 0;
 int old_tick = 0;
 
+tmElements_t tm;
+
 void setSQW(uint8_t value) {
   Wire.beginTransmission(DS1307_CTRL_ID);
   Wire.write(7);
@@ -37,13 +39,20 @@ void setupRTC() {
   setSQW(0x10);
 }
 
-void displayRTCTime(tmElements_t& tm) {
-  if (RTC.read(tm)) {
+int readRTC() {
+  return RTC.read(tm);
+}
+void displayRTCTime() {
+  if (readRTC()) {
      printDate(tm);
      // Go to the next line
      lcd.gotoXY(0, 1);
      printTime(tm);
   }  
+}
+
+void getCurDate(char* date) {
+  snprintf(date, 12, "%d%c%d%c%d", tm.Month, '/', tm.Day, '/', tmYearToCalendar(tm.Year));
 }
 
 void printDate(const tmElements_t& tm) {
