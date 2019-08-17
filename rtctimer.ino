@@ -10,6 +10,8 @@ int tick = 0;
 int old_tick = 0;
 
 tmElements_t tm;
+char curDate[11]; 
+char curTime[11]; 
 
 void setSQW(uint8_t value) {
   Wire.beginTransmission(DS1307_CTRL_ID);
@@ -46,36 +48,31 @@ int readRTC() {
 }
 void displayRTCTime() {
   if (readRTC()) {
+     getCurDateStr(curDate, false);
      printDate();
      // Go to the next line
      lcd.gotoXY(0, 1);
+     getCurTimeStr(curDate, true);
      printTime();
   }  
 }
 
-void getCurDate(char* date) {
-  snprintf(date, 12, "%d%c%d%c%d", tm.Month, '/', tm.Day, '/', tmYearToCalendar(tm.Year));
+void getCurDateStr(char* date, bool isFullYear) {  
+  snprintf(date, 12, "%d%c%d%c%d", tm.Month, '/', tm.Day, '/', tmYearToCalendar(isFullYear ? tm.Year : tm.Year % 100));
+}
+
+void getCurTimeStr(char* date, bool isFullTime) {
+  if (isFullTime) {
+    snprintf(date, 12, "%02d%c%02d%c%02d", tm.Hour, ':', tm.Minute, ':', tm.Second);    
+  } else {
+    snprintf(date, 12, "%02d%c%02d", tm.Hour, ':', tm.Minute);    
+  }
 }
 
 void printDate() {
-     lcd.print(tm.Month);
-     lcd.print('/');
-     printTwoChar(tm.Day);
-     lcd.print('/');
-     lcd.print(tmYearToCalendar(tm.Year) % 100);  
+    lcd.print(curDate);
 }
 
 void printTime() {
-     lcd.print(tm.Hour);
-     lcd.print(':');
-     printTwoChar(tm.Minute);
-     lcd.print(':');
-     printTwoChar(tm.Second);
-}
-
-void printTwoChar(uint8_t val){
-  if (val < 10){
-      lcd.print('0');
-  }
-  lcd.print(val);   
+    lcd.print(curTime);
 }

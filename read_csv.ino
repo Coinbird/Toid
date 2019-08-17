@@ -40,9 +40,9 @@ void openSDFile() {
   // Must be dim 9 to allow for zero byte.
   char dateS[11], dayS[4], timeS[9], highLow[2];
 
-  char searchDate[20]; 
+  char searchDate[11]; 
   readRTC();
-  getCurDate(searchDate);
+  getCurDateStr(searchDate, true);
   while (filePtr.available() && strcmp(searchDate, dateS) != 0) {    
     if (csvReadText(&filePtr, dateS, sizeof(dateS), CSV_DELIM) != CSV_DELIM 
       || csvReadText(&filePtr, dayS, sizeof(dayS), CSV_DELIM) != CSV_DELIM
