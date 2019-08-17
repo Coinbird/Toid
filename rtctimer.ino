@@ -52,7 +52,7 @@ void displayRTCTime() {
      printDate();
      // Go to the next line
      lcd.gotoXY(0, 1);
-     getCurTimeStr(curDate, true);
+     getCurTimeStr(curTime, true);
      printTime();
   }  
 }

@@ -4,18 +4,22 @@
 
 #include <limits.h>
 
-const uint8_t chipSelect = 4;
+#define CHIPSELECT 4
 
-char currentTide[255] = "---";
+char currentTide[20] = "---";
+uint8_t tideHour = 0;
+uint8_t tideMin = 0;
+
+bool isCurrentHighTide = false;
 File filePtr;
 
-const char CSV_DELIM = ',';
+#define CSV_DELIM ','
 
 void openSDFile() {
   // Initialize the SD card.
   lcd.clear();
   lcd.print("Init...");
-  if (!SD.begin(chipSelect))
+  if (!SD.begin(CHIPSELECT))
   {
     lcd.clear();
     lcd.print("Init err");
@@ -53,10 +57,21 @@ void openSDFile() {
       sprintf(currentTide, "Read Err");      
     } else {
 //      String heightS = String(heightFt, 2);
-      sprintf(currentTide, timeS);          
+      parseHourMin(timeS, tideHour, tideMin);
+      if (strcmp(highLow, 'H' == 0)) {
+        isCurrentHighTide = true;
+      } else {
+        isCurrentHighTide = false;
+      } 
+      sprintf(currentTide, "%d %d %s", tideHour, tideMin, highLow);
     }
   }
   filePtr.close(); // TODO : do not close - keep file handle to seek
+}
+
+void parseHourMin(char* timeS, uint8_t& hour, uint8_t& min) {
+  hour = atoi(timeS);
+  min = atoi(timeS + 3);  
 }
 
 char * getCurrentTide() {
