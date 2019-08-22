@@ -12,7 +12,7 @@ uint8_t displayMode = 0;
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial) ; // wait for Arduino Serial Monitor
+//  while(!Serial) {} 
   delay(200);  
   openSDFile();
   setupRTC();
@@ -21,29 +21,30 @@ void setup()
 
 void loop()
 {
-//  if (buttonB.getSingleDebouncedPress()) {
-//    randomizeTarget();
-//  }
+  if (buttonB.getSingleDebouncedPress()) {
+    moveEighth();
+  }
   if (buttonC.getSingleDebouncedPress()) {
     stopAll();
-    if (displayMode == 0) {
-      displayMode = 1;
-    } else {
-      displayMode = 0;
-    }
+//    if (displayMode == 0) {
+//      displayMode = 1;
+//    } else {
+//      displayMode = 0;
+//    }
   }
 
   if (isRTCTriggered()) {
     // Clear the screen
     lcd.clear();
-    
-    switch(displayMode) {
-      case 0:
-        displayRTCTime();
-        break;
-      default:
-        lcd.print(getNextTide());    
-    }
+    displayRTCTime();
+        
+//    switch(displayMode) {
+//      case 0:
+//        displayRTCTime();
+//        break;
+//      default:
+//        lcd.print(getNextTide());    
+//    }
   }
 
   if (isCheckTideTriggered()) {

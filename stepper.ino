@@ -30,7 +30,8 @@ void moveSmallAmountCCW() {
 }
 
 void stopAll() {
-  stepper.stop();
+  stepper.setCurrentPosition(0);
+//  stepper.stop();
 }
 
 void runStepper() {
@@ -41,11 +42,23 @@ long getPos() {
   return stepper.currentPosition();
 }
 
-void randomizeTarget() {
-  stepper.moveTo(getPos() + (long)STEPS_PER_OUT_REV/4);
+void moveEighth() {
+  stepper.moveTo(getPos() + (long)STEPS_PER_OUT_REV/8);
 }
 
 void moveToTidePosition(int mins, bool isHighTide) {
-  Serial.print("move ");
+  float pctMove = (float)mins / 360.0;
+  Serial.print("mins: ");
   Serial.println(mins);
+  if (isHighTide) { // Left Side
+    long moveTarget = STEPS_PER_OUT_REV/2 - (long)(pctMove * float(STEPS_PER_OUT_REV / 2));
+    stepper.moveTo(moveTarget);
+    Serial.print("move hi ");
+    Serial.println(moveTarget);
+  } else {
+    long moveTarget = STEPS_PER_OUT_REV - (long)(pctMove * float(STEPS_PER_OUT_REV / 2));
+    stepper.moveTo(moveTarget);
+    Serial.print("move lo ");
+    Serial.println(moveTarget);
+  }
 }

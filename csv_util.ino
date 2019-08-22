@@ -45,6 +45,7 @@ void openSDFile() {
     while(1){}  // done
   }
 
+  Serial.println("tides.csv open");
   readNextTide();
 }
 
@@ -70,8 +71,7 @@ char * getNextTide() {
 }
 
 char * getTimeToNextTideInfo() {
-     // "04 94 L"
-    sprintf(nextTideInfo, "%d %d %d", tideHour, tideMinute, minsUntilNextTide()); //isCurrentHighTide ? "Hi" : "Lo");
+    sprintf(nextTideInfo, "%d:%d %s", tideHour, tideMinute, isCurrentHighTide ? "Hi" : "Lo");
     return nextTideInfo;
 }
 
@@ -81,7 +81,7 @@ void readNextTide() {
   int16_t heightCM; 
   float heightFt;
   // Must be dimmed to allow for zero byte.
-  char dateS[11], dayS[4], timeS[9], highLow[2];
+  char dateS[12], dayS[5], timeS[10], highLow[2];
 
   char searchDate[11]; 
   readRTC();
@@ -90,6 +90,7 @@ void readNextTide() {
   // get current time
   curHour = getHour();
   curMinute = getMinute();
+
 
   // get current date
   getCurDateStr(searchDate, true);
@@ -100,19 +101,21 @@ void readNextTide() {
 
   bool foundTime = false;
   if (pendingNextDayTide && strcmp(searchDate, dateS) != 0 ) {
-      Serial.print("wait tmw ");
+      Serial.print("Wait tmw ");
       serialPrintTide();
       return;    
   }
 
   if (tideHour > curHour || (tideHour == curHour && tideMinute > curMinute)) {
-      Serial.print("wait til ");
+      Serial.print("Wait til ");
       serialPrintTide();
       loadedCurrentTide = false;
       return;
   }
   serialPrintTide();
-  Serial.println("Read");
+  if (filePtr.available()) {
+    Serial.println("Reading from file...");  
+  }
   while (filePtr.available() && !foundTime) {    
     if (csvReadText(&filePtr, dateS, sizeof(dateS), CSV_DELIM) != CSV_DELIM 
       || csvReadText(&filePtr, dayS, sizeof(dayS), CSV_DELIM) != CSV_DELIM
@@ -121,6 +124,10 @@ void readNextTide() {
       || csvReadInt16(&filePtr, &heightCM, CSV_DELIM) != CSV_DELIM
       || csvReadText(&filePtr, highLow, sizeof(highLow), CSV_DELIM) != '\n') {
       sprintf(nextTide, "Read Err");      
+      Serial.println(dateS);
+      Serial.println(dayS);
+      Serial.println(timeS);
+      Serial.println("READ ERROR - check file");
       filePtr.close();
       foundTime = true;
     } else if (strcmp(searchDate, dateS) == 0) {
@@ -131,12 +138,12 @@ void readNextTide() {
         serialPrintTide();
         Serial.println("skipped");
       } else {
-        if (strcmp(highLow, 'H') == 0) {
+        if (strncmp(highLow, "H", 1) == 0) {
           isCurrentHighTide = true;
         } else {
           isCurrentHighTide = false;
         } 
-        sprintf(nextTide, "%d %d %s", tideHour, tideMinute, highLow);
+        sprintf(nextTide, "%d %d %s", tideHour, tideMinute, isCurrentHighTide ? "Hi" : "Lo");
         Serial.println(nextTide);
         foundTime = true;        
         loadedCurrentTide = true;
@@ -147,6 +154,13 @@ void readNextTide() {
       serialPrintTide();
       Serial.println(dateS);      
       Serial.println("Tomorrow Tide");      
+      if (strcmp(highLow, 'H') == 0) {
+        isCurrentHighTide = true;
+      } else {
+        isCurrentHighTide = false;
+      } 
+      sprintf(nextTide, "%d %d %s", tideHour, tideMinute, isCurrentHighTide ? "Hi" : "Lo");
+      Serial.println(nextTide);
       foundTime = true;
       pendingNextDayTide = true;
       loadedCurrentTide = true;
@@ -162,20 +176,16 @@ void serialPrintTide() {
 }
 
 int minsUntilNextTide() {
-
   curHour = getHour();
   curMinute = getMinute();
+  int totalMins;
   if (pendingNextDayTide) {
     int curMins = (23 - curHour) * 60 + (60 - curMinute);
-//    Serial.println(curMins);
-    int tmwMins = (tideHour * 60) + tideMinute;
-//    Serial.println(tmwMins);
-    return curMins + tmwMins;
+    totalMins = curMins + (tideHour * 60) + tideMinute;
   } else {
-    int curMins = (tideHour - curHour) * 60 + tideMinute - curMinute;
-//    Serial.println(curMins);
-    return curMins;    
+    totalMins = (tideHour - curHour) * 60 + tideMinute - curMinute;
   }
+  return totalMins > 360 ? 360 : totalMins;
 }
 
 bool isNextHighTide() {
