@@ -37,11 +37,30 @@ void openSDFile() {
     while(1){}  // done
   }
 
-  // 1/1/2019,Tue,7:11 AM,6.31,192,L
+  readNextTide();
+}
+
+void parseHourMin(char* timeS, uint8_t& hour, uint8_t& min) {
+  // Convert to 24-hour time
+  // Assumes EXACT format:
+  // HH:MM PM
+  hour = atoi(timeS);
+  min = atoi(timeS + 2); 
+  char* am_pm = timeS + 5;
+  hour += bool(strcmp(am_pm, "PM") == 0) ? 12 : 0; // 24 hour time
+  // 24h - if PM then add 12    
+}
+
+char * getCurrentTide() {
+  return currentTide;
+}
+
+void readNextTide() {
+    // 1/1/2019,Tue,7:11 AM,6.31,192,L
 
   int16_t heightCM; 
   float heightFt;
-  // Must be dim 9 to allow for zero byte.
+  // Must be dimmed to allow for zero byte.
   char dateS[11], dayS[4], timeS[9], highLow[2];
 
   char searchDate[11]; 
@@ -58,7 +77,7 @@ void openSDFile() {
     } else {
 //      String heightS = String(heightFt, 2);
       parseHourMin(timeS, tideHour, tideMin);
-      if (strcmp(highLow, 'H' == 0)) {
+      if (strcmp(highLow, 'H') == 0) {
         isCurrentHighTide = true;
       } else {
         isCurrentHighTide = false;
@@ -67,15 +86,6 @@ void openSDFile() {
     }
   }
   filePtr.close(); // TODO : do not close - keep file handle to seek
-}
-
-void parseHourMin(char* timeS, uint8_t& hour, uint8_t& min) {
-  hour = atoi(timeS);
-  min = atoi(timeS + 3);  
-}
-
-char * getCurrentTide() {
-  return currentTide;
 }
 
 

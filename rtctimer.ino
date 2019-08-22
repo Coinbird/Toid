@@ -28,6 +28,16 @@ int getTickCount() {
   return tick;
 }
 
+bool isCheckTideTriggered() {
+  if (tick > 10) { // TODO 60
+    tick = 0;
+    old_tick = 0;
+    return true;
+  } else {
+    return false;
+  }
+}
+
 bool isRTCTriggered() {
   if (tick != old_tick) {
     old_tick = tick;   

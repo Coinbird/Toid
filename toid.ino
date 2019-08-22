@@ -11,6 +11,9 @@ uint8_t displayMode = 0;
 
 void setup()
 {
+  Serial.begin(115200);
+  while (!Serial) ; // wait for Arduino Serial Monitor
+  delay(200);  
   openSDFile();
   setupRTC();
   setupStepper();
@@ -42,5 +45,12 @@ void loop()
         lcd.print(getCurrentTide());    
     }
   }
+
+  if (isCheckTideTriggered()) {
+    lcd.clear();
+    lcd.print("CHK");    
+    
+  }
+
   runStepper();
 }
