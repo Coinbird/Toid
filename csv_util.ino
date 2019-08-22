@@ -53,8 +53,14 @@ void parseHourMin(char* timeS, uint8_t& hour, uint8_t& min) {
   // Assumes exact format:
   // HH:MM PM
   hour = atoi(timeS);
-  min = atoi(timeS + 2); 
-  char* am_pm = timeS + 5;
+  char* am_pm;
+  if (hour < 10) {
+    min = atoi(timeS + 2);   
+    am_pm = timeS + 5;
+  } else {
+    min = atoi(timeS + 3); 
+    am_pm = timeS + 6;
+  }
   hour += bool(strcmp(am_pm, "PM") == 0) ? 12 : 0; // 24 hour time
   // 24h - if PM then add 12    
 }
@@ -166,7 +172,9 @@ int minsUntilNextTide() {
 //    Serial.println(tmwMins);
     return curMins + tmwMins;
   } else {
-    return (tideHour - curHour) * 60 + tideMinute - curMinute;
+    int curMins = (tideHour - curHour) * 60 + tideMinute - curMinute;
+//    Serial.println(curMins);
+    return curMins;    
   }
 }
 
