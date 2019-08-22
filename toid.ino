@@ -42,14 +42,14 @@ void loop()
         displayRTCTime();
         break;
       default:
-        lcd.print(getCurrentTide());    
+        lcd.print(getNextTide());    
     }
   }
 
   if (isCheckTideTriggered()) {
     lcd.clear();
-    lcd.print("CHK");    
-    
+    lcd.print(getTimeToNextTideInfo());    
+    readNextTide();
   }
 
   runStepper();

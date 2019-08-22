@@ -29,7 +29,7 @@ int getTickCount() {
 }
 
 bool isCheckTideTriggered() {
-  if (tick > 10) { // TODO 60
+  if (tick > 5) { // TODO 60
     tick = 0;
     old_tick = 0;
     return true;
