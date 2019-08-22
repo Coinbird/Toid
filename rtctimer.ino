@@ -56,6 +56,15 @@ void setupRTC() {
 int readRTC() {
   return RTC.read(tm);
 }
+
+uint8_t getHour() {
+  return tm.Hour;
+}
+
+uint8_t  getMinute() {
+  return tm.Minute;
+}
+
 void displayRTCTime() {
   if (readRTC()) {
      getCurDateStr(curDate, false);
