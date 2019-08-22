@@ -44,3 +44,8 @@ long getPos() {
 void randomizeTarget() {
   stepper.moveTo(getPos() + (long)STEPS_PER_OUT_REV/4);
 }
+
+void moveToTidePosition(int mins, bool isHighTide) {
+  Serial.print("move ");
+  Serial.println(mins);
+}

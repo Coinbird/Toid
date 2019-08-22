@@ -21,9 +21,9 @@ void setup()
 
 void loop()
 {
-  if (buttonB.getSingleDebouncedPress()) {
-    randomizeTarget();
-  }
+//  if (buttonB.getSingleDebouncedPress()) {
+//    randomizeTarget();
+//  }
   if (buttonC.getSingleDebouncedPress()) {
     stopAll();
     if (displayMode == 0) {
@@ -50,6 +50,9 @@ void loop()
     lcd.clear();
     lcd.print(getTimeToNextTideInfo());    
     readNextTide();
+
+    moveToTidePosition( minsUntilNextTide(), isNextHighTide());
+      
   }
 
   runStepper();
