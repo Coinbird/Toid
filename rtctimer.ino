@@ -77,7 +77,8 @@ void displayRTCTime() {
 }
 
 void getCurDateStr(char* date, bool isFullYear) {  
-  snprintf(date, 12, "%d%c%d%c%d", tm.Month, '/', tm.Day, '/', tmYearToCalendar(isFullYear ? tm.Year : tm.Year % 100));
+  // Outputs with zero padding: 01/01/2019
+  snprintf(date, 12, "%02d%c%02d%c%d", tm.Month, '/', tm.Day, '/', tmYearToCalendar(isFullYear ? tm.Year : tm.Year % 100));
 }
 
 void getCurTimeStr(char* date, bool isFullTime) {

@@ -4,10 +4,12 @@
 
 #define CHIPSELECT 4
 
-char nextTide[10];
 char nextTideInfo[10];
+char nextTideLevel[10];
+
 uint8_t tideHour = 0;
 uint8_t tideMinute = 0;
+float tideLevel = 0.0;
 
 uint8_t curHour = 0;
 uint8_t curMinute = 0;
@@ -50,38 +52,33 @@ void openSDFile() {
 }
 
 void parseHourMin(char* timeS, uint8_t& hour, uint8_t& min) {
-  // Convert to 24-hour time
-  // Assumes exact format:
-  // HH:MM PM
+  // Assume 24-hour time and 
+  // zero-padded in this exact format:
+  // HH:MM 
   hour = atoi(timeS);
-  char* am_pm;
-  if (hour < 10) {
-    min = atoi(timeS + 2);   
-    am_pm = timeS + 5;
-  } else {
-    min = atoi(timeS + 3); 
-    am_pm = timeS + 6;
-  }
-  hour += bool(strcmp(am_pm, "PM") == 0) ? 12 : 0; // 24 hour time
-  // 24h - if PM then add 12    
-}
-
-char * getNextTide() {
-  return nextTide;
+  min = atoi(timeS + 3);   
 }
 
 char * getTimeToNextTideInfo() {
-    sprintf(nextTideInfo, "%d:%d %s", tideHour, tideMinute, isCurrentHighTide ? "Hi" : "Lo");
+    sprintf(nextTideInfo, "%02d:%02d %s", tideHour, tideMinute, isCurrentHighTide ? "Hi " : "Lo");
     return nextTideInfo;
 }
 
+char * getNextTideLevel() {
+    dtostrf(tideLevel,7, 2, nextTideLevel);
+//    sprintf(nextTideLevel, "%.2f", ass);
+    return nextTideLevel;
+}
+
 void readNextTide() {
-    // 1/1/2019,Tue,7:11 AM,6.31,192,L
+  // from https://tidesandcurrents.noaa.gov/noaatideannual.html in 24 hour Clock export as TXT
+  // Date     Day Time  Pred(Ft)  Pred(cm)  High/Low
+  // Converted and exported as CSV in Google Sheets in this format:
+  // 01/01/2019,Tue,07:11,6.31,192,L
 
   int16_t heightCM; 
-  float heightFt;
   // Must be dimmed to allow for zero byte.
-  char dateS[12], dayS[5], timeS[10], highLow[2];
+  char dateS[11], dayS[4], timeS[6], highLow[2];
 
   char searchDate[11]; 
   readRTC();
@@ -94,10 +91,10 @@ void readNextTide() {
 
   // get current date
   getCurDateStr(searchDate, true);
-  Serial.print("c ");
-  Serial.print(curHour);
-  Serial.print(":");
-  Serial.println(curMinute);
+//  Serial.print("c ");
+//  Serial.print(curHour);
+//  Serial.print(":");
+//  Serial.println(curMinute);
 
   bool foundTime = false;
   if (pendingNextDayTide && strcmp(searchDate, dateS) != 0 ) {
@@ -107,7 +104,7 @@ void readNextTide() {
   }
 
   if (tideHour > curHour || (tideHour == curHour && tideMinute > curMinute)) {
-      Serial.print("Wait til ");
+      Serial.print("Wait ");
       serialPrintTide();
       loadedCurrentTide = false;
       return;
@@ -120,16 +117,19 @@ void readNextTide() {
     if (csvReadText(&filePtr, dateS, sizeof(dateS), CSV_DELIM) != CSV_DELIM 
       || csvReadText(&filePtr, dayS, sizeof(dayS), CSV_DELIM) != CSV_DELIM
       || csvReadText(&filePtr, timeS, sizeof(timeS), CSV_DELIM) != CSV_DELIM    
-      || csvReadFloat(&filePtr, &heightFt, CSV_DELIM) != CSV_DELIM
+      || csvReadFloat(&filePtr, &tideLevel, CSV_DELIM) != CSV_DELIM
       || csvReadInt16(&filePtr, &heightCM, CSV_DELIM) != CSV_DELIM
       || csvReadText(&filePtr, highLow, sizeof(highLow), CSV_DELIM) != '\n') {
-      sprintf(nextTide, "Read Err");      
-      Serial.println(dateS);
-      Serial.println(dayS);
-      Serial.println(timeS);
-      Serial.println("READ ERROR - check file");
+//      Serial.println(dateS);
+//      Serial.println(dayS);
+//      Serial.println(timeS);
+//      Serial.println(heightFt);
+//      Serial.println(heightCM);
+//      Serial.println(highLow);
+      Serial.println("READ ERROR - EOF?");
       filePtr.close();
       foundTime = true;
+      while(true) {}
     } else if (strcmp(searchDate, dateS) == 0) {
       parseHourMin(timeS, tideHour, tideMinute);
       pendingNextDayTide = false;
@@ -143,29 +143,27 @@ void readNextTide() {
         } else {
           isCurrentHighTide = false;
         } 
-        sprintf(nextTide, "%d %d %s", tideHour, tideMinute, isCurrentHighTide ? "Hi" : "Lo");
-        Serial.println(nextTide);
+        getTimeToNextTideInfo();
         foundTime = true;        
         loadedCurrentTide = true;
-        // TODO: refactor to LoadNextTide instead
+        // TODO: refactor to simplify - LoadNextTide
       }
     } else if (initialLoadTide) {
       parseHourMin(timeS, tideHour, tideMinute);
       serialPrintTide();
       Serial.println(dateS);      
-      Serial.println("Tomorrow Tide");      
-      if (strcmp(highLow, 'H') == 0) {
+      Serial.println("Tmw Tide");      
+      if (strncmp(highLow, "H", 1) == 0) {
         isCurrentHighTide = true;
       } else {
         isCurrentHighTide = false;
       } 
-      sprintf(nextTide, "%d %d %s", tideHour, tideMinute, isCurrentHighTide ? "Hi" : "Lo");
-      Serial.println(nextTide);
+      getTimeToNextTideInfo();
       foundTime = true;
       pendingNextDayTide = true;
       loadedCurrentTide = true;
     }
-  }
+  } 
 }
 
 void serialPrintTide() {
@@ -173,6 +171,7 @@ void serialPrintTide() {
       Serial.print(tideHour);
       Serial.print(":");
       Serial.println(tideMinute);
+      Serial.println(tideLevel);
 }
 
 int minsUntilNextTide() {

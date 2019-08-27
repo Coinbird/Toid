@@ -71,27 +71,27 @@ int csvReadInt16(File* file, int16_t* num, char delim) {
   return rtn;
 }
 
-//------------------------------------------------------------------------------
-int csvReadUint32(File* file, uint32_t* num, char delim) {
-  char buf[20];
-  char* ptr;
-  int rtn = csvReadText(file, buf, sizeof(buf), delim);
-  if (rtn < 0) return rtn;
-  *num = strtoul(buf, &ptr, 10);
-  if (buf == ptr) return -3;
-  while(isspace(*ptr)) ptr++;
-  return *ptr == 0 ? rtn : -4;
-}
-
-//------------------------------------------------------------------------------
-int csvReadUint16(File* file, uint16_t* num, char delim) {
-  uint32_t tmp;
-  int rtn = csvReadUint32(file, &tmp, delim);
-  if (rtn < 0) return rtn;
-  if (tmp > UINT_MAX) return -5;
-  *num = tmp;
-  return rtn;
-}
+////------------------------------------------------------------------------------
+//int csvReadUint32(File* file, uint32_t* num, char delim) {
+//  char buf[20];
+//  char* ptr;
+//  int rtn = csvReadText(file, buf, sizeof(buf), delim);
+//  if (rtn < 0) return rtn;
+//  *num = strtoul(buf, &ptr, 10);
+//  if (buf == ptr) return -3;
+//  while(isspace(*ptr)) ptr++;
+//  return *ptr == 0 ? rtn : -4;
+//}
+//
+////------------------------------------------------------------------------------
+//int csvReadUint16(File* file, uint16_t* num, char delim) {
+//  uint32_t tmp;
+//  int rtn = csvReadUint32(file, &tmp, delim);
+//  if (rtn < 0) return rtn;
+//  if (tmp > UINT_MAX) return -5;
+//  *num = tmp;
+//  return rtn;
+//}
 
 //------------------------------------------------------------------------------
 int csvReadDouble(File* file, double* num, char delim) {
