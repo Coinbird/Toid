@@ -93,24 +93,24 @@ int csvReadInt16(File* file, int16_t* num, char delim) {
 //  return rtn;
 //}
 
-//------------------------------------------------------------------------------
-int csvReadDouble(File* file, double* num, char delim) {
-  char buf[20];
-  char* ptr;
-  int rtn = csvReadText(file, buf, sizeof(buf), delim);
-  if (rtn < 0) return rtn;
-  *num = strtod(buf, &ptr);
-  if (buf == ptr) return -3;
-  while(isspace(*ptr)) ptr++;
-  return *ptr == 0 ? rtn : -4;
-}
-
-//------------------------------------------------------------------------------
-int csvReadFloat(File* file, float* num, char delim) {
-  double tmp;
-  int rtn = csvReadDouble(file, &tmp, delim);
-  if (rtn < 0)return rtn;
-  // could test for too large.
-  *num = tmp;
-  return rtn;
-}
+////------------------------------------------------------------------------------
+//int csvReadDouble(File* file, double* num, char delim) {
+//  char buf[20];
+//  char* ptr;
+//  int rtn = csvReadText(file, buf, sizeof(buf), delim);
+//  if (rtn < 0) return rtn;
+//  *num = strtod(buf, &ptr);
+//  if (buf == ptr) return -3;
+//  while(isspace(*ptr)) ptr++;
+//  return *ptr == 0 ? rtn : -4;
+//}
+//
+////------------------------------------------------------------------------------
+//int csvReadFloat(File* file, float* num, char delim) {
+//  double tmp;
+//  int rtn = csvReadDouble(file, &tmp, delim);
+//  if (rtn < 0)return rtn;
+//  // could test for too large.
+//  *num = tmp;
+//  return rtn;
+//}
