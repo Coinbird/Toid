@@ -1,6 +1,8 @@
 #include <Wire.h>
 #include <DS1307RTC.h>
 #include <TimeLib.h>
+# THIS IS FOR A DS-1307 TIMER.
+# MAIN BRANCH NOW UPDATED FOR DS3231!
 
 #define DS1307_CTRL_ID 0x68
 
