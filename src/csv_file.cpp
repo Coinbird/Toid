@@ -1,4 +1,6 @@
+#include <SD.h>
 #include <limits.h>
+#include "csv_file.h"
 
 /*
  * Read a file one field at a time.
